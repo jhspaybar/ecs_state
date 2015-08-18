@@ -18,3 +18,5 @@ you should expect to see the Cluster, ContainerInstance, and Task output, along 
 to place the first TaskDefinition created.  No locations are found because of a port conflict.  If you were to scale down
 the service created in the Getting Started Wizard to 0, running this code again would yield the now available ContainerInstance
 as a location found.
+
+For more details please see http://williamthurston.com/2015/08/20/create-custom-aws-ecs-schedulers-with-ecs-state.html
