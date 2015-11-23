@@ -75,7 +75,7 @@ func (state *State) handleFailures(failures []*ecs.Failure) {
 	if len(failures) != 0 {
 		state.log.Warn("Encountered", len(failures), "failures when contacting ECS")
 		for _, failure := range failures {
-			state.log.Warn("Failure ARN:", *failure.ARN, ", Reason:", *failure.Reason)
+			state.log.Warn("Failure ARN:", *failure.Arn, ", Reason:", *failure.Reason)
 		}
 	}
 }
@@ -98,7 +98,7 @@ func (state *State) RefreshClusterState() {
 
 	for _, cluster := range resp.Clusters {
 		clusterModel := Cluster{}
-		state.db.Where(Cluster{ARN: *cluster.ClusterARN}).Assign(Cluster{Name: *cluster.ClusterName, Status: *cluster.Status}).FirstOrCreate(&clusterModel)
+		state.db.Where(Cluster{ARN: *cluster.ClusterArn}).Assign(Cluster{Name: *cluster.ClusterName, Status: *cluster.Status}).FirstOrCreate(&clusterModel)
 		state.log.Debug(fmt.Sprintf("Refreshed cluster: %+v", cluster))
 	}
 }
@@ -116,7 +116,7 @@ func (state *State) RefreshContainerInstanceState() {
 	refreshTime := int(time.Now().Unix())
 	err := state.ecs_client.ListContainerInstancesPages(params, func(page *ecs.ListContainerInstancesOutput, lastPage bool) bool {
 		params := &ecs.DescribeContainerInstancesInput{
-			ContainerInstances: page.ContainerInstanceARNs,
+			ContainerInstances: page.ContainerInstanceArns,
 			Cluster:            aws.String(state.clusterName),
 		}
 		resp, err := state.ecs_client.DescribeContainerInstances(params)
@@ -130,7 +130,7 @@ func (state *State) RefreshContainerInstanceState() {
 		for _, containerInstance := range resp.ContainerInstances {
 			containerInstanceModel := ContainerInstance{}
 			finder := ContainerInstance{
-				ARN: *containerInstance.ContainerInstanceARN,
+				ARN: *containerInstance.ContainerInstanceArn,
 			}
 			assignment := state.containerInstanceAssignment(cluster, containerInstance)
 			assignment.RefreshTime = refreshTime
@@ -166,7 +166,7 @@ func (state *State) RefreshTaskState() {
 	refreshTime := int(time.Now().Unix())
 	err := state.ecs_client.ListTasksPages(params, func(page *ecs.ListTasksOutput, lastPage bool) bool {
 		params := &ecs.DescribeTasksInput{
-			Tasks:   page.TaskARNs,
+			Tasks:   page.TaskArns,
 			Cluster: aws.String(state.clusterName),
 		}
 		resp, err := state.ecs_client.DescribeTasks(params)
@@ -180,7 +180,7 @@ func (state *State) RefreshTaskState() {
 		for _, task := range resp.Tasks {
 			taskModel := Task{}
 			finder := Task{
-				ARN: *task.TaskARN,
+				ARN: *task.TaskArn,
 			}
 			assignment := state.taskAssignment(task)
 			assignment.RefreshTime = refreshTime
@@ -207,9 +207,9 @@ func (state *State) RefreshTaskState() {
 // Creates a Task model to be used in a gorm Assign() call
 func (state *State) taskAssignment(task *ecs.Task) Task {
 	assignment := Task{
-		ClusterARN:           *task.ClusterARN,
-		ContainerInstanceARN: *task.ContainerInstanceARN,
-		TaskDefinitionARN:    *task.TaskDefinitionARN,
+		ClusterARN:           *task.ClusterArn,
+		ContainerInstanceARN: *task.ContainerInstanceArn,
+		TaskDefinitionARN:    *task.TaskDefinitionArn,
 		DesiredStatus:        *task.DesiredStatus,
 		LastStatus:           *task.DesiredStatus,
 	}
@@ -272,8 +272,8 @@ func (state *State) containerInstanceAssignment(cluster Cluster, containerInstan
 	if containerInstance.AgentUpdateStatus != nil {
 		assignment.AgentUpdateStatus = *containerInstance.AgentUpdateStatus
 	}
-	if containerInstance.EC2InstanceID != nil {
-		assignment.EC2InstanceId = *containerInstance.EC2InstanceID
+	if containerInstance.Ec2InstanceId != nil {
+		assignment.EC2InstanceId = *containerInstance.Ec2InstanceId
 	}
 	if containerInstance.RegisteredResources != nil {
 		assignment.RegisteredCPU = state.getResourceAsInt(containerInstance.RegisteredResources, "CPU", 0)
@@ -322,7 +322,7 @@ func (state *State) FindTaskDefinition(td string) TaskDefinition {
 		}
 
 		taskDefinition = TaskDefinition{
-			ARN:         *resp.TaskDefinition.TaskDefinitionARN,
+			ARN:         *resp.TaskDefinition.TaskDefinitionArn,
 			ShortString: fmt.Sprintf("%s:%s", *resp.TaskDefinition.Family, strconv.Itoa(int(*resp.TaskDefinition.Revision))),
 			Cpu:         0,
 			Memory:      0,
@@ -331,7 +331,7 @@ func (state *State) FindTaskDefinition(td string) TaskDefinition {
 		tcpPorts := []string{}
 		udpPorts := []string{}
 		for _, containerDefinition := range resp.TaskDefinition.ContainerDefinitions {
-			taskDefinition.Cpu += int(*containerDefinition.CPU)
+			taskDefinition.Cpu += int(*containerDefinition.Cpu)
 			taskDefinition.Memory += int(*containerDefinition.Memory)
 			for _, portMapping := range containerDefinition.PortMappings {
 				if portMapping.HostPort != nil && *portMapping.HostPort != 0 {
