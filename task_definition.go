@@ -1,4 +1,4 @@
-package ecs_state
+package ecsstate
 
 // Local representation of an ECS TaskDefinition and stored by gorm.  Resources are extracted,
 // but the complete definition is ignored.

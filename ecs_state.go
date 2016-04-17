@@ -3,7 +3,7 @@
 // placing tasks within the ECS cluster to replicate the cluster state into a local working copy and synchronize on occassion.
 //
 // Author: William Thurston
-package ecs_state
+package ecsstate
 
 import (
 	"bytes"
