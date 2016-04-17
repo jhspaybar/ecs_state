@@ -3,26 +3,10 @@ package mocks
 import "github.com/jhspaybar/ecsstate"
 import "github.com/stretchr/testify/mock"
 
-import "github.com/aws/aws-sdk-go/service/ecs"
+import "github.com/jinzhu/gorm"
 
 type StateOps struct {
 	mock.Mock
-}
-
-// Initialize provides a mock function with given fields: clusterName, ecs, logger
-func (_m *StateOps) Initialize(clusterName string, e *ecs.ECS, logger ecsstate.Logger) *ecsstate.State {
-	ret := _m.Called(clusterName, e, logger)
-
-	var r0 *ecsstate.State
-	if rf, ok := ret.Get(0).(func(string, *ecs.ECS, ecsstate.Logger) *ecsstate.State); ok {
-		r0 = rf(clusterName, e, logger)
-	} else {
-		if ret.Get(0) != nil {
-			r0 = ret.Get(0).(*ecsstate.State)
-		}
-	}
-
-	return r0
 }
 
 // FindLocationsForTaskDefinition provides a mock function with given fields: td
@@ -68,4 +52,20 @@ func (_m *StateOps) RefreshContainerInstanceState() {
 // RefreshTaskState provides a mock function with given fields:
 func (_m *StateOps) RefreshTaskState() {
 	_m.Called()
+}
+
+// DB provides a mock function with given fields:
+func (_m *StateOps) DB() *gorm.DB {
+	ret := _m.Called()
+
+	var r0 *gorm.DB
+	if rf, ok := ret.Get(0).(func() *gorm.DB); ok {
+		r0 = rf()
+	} else {
+		if ret.Get(0) != nil {
+			r0 = ret.Get(0).(*gorm.DB)
+		}
+	}
+
+	return r0
 }
