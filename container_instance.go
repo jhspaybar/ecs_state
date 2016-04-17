@@ -1,4 +1,4 @@
-package ecs_state
+package ecsstate
 
 // Local representation of an ECS ContainerInstance and stored by gorm.
 // Notably, resources and other sub-objects have been placed into their own

@@ -1,4 +1,4 @@
-package ecs_state
+package ecsstate
 
 // Local representation of an ECS cluster and stored by gorm
 type Cluster struct {

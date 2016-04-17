@@ -1,4 +1,4 @@
-package ecs_state
+package ecsstate
 
 // Local representation of an ECS Task and stored by gorm.  A number of fields are absent
 // for now as they are not needed to track and update the state of the state of the cluster typically.

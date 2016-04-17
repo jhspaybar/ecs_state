@@ -1,0 +1,9 @@
+package: github.com/jhspaybar/ecs_state
+import:
+- package: github.com/aws/aws-sdk-go
+  subpackages:
+  - aws
+  - aws/awserr
+  - service/ecs
+- package: github.com/jinzhu/gorm
+- package: github.com/mattn/go-sqlite3

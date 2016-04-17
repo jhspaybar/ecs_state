@@ -1,4 +1,4 @@
-package ecs_state
+package ecsstate
 
 import (
 	"log"

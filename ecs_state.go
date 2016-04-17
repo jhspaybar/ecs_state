@@ -3,7 +3,7 @@
 // placing tasks within the ECS cluster to replicate the cluster state into a local working copy and synchronize on occassion.
 //
 // Author: William Thurston
-package ecs_state
+package ecsstate
 
 import (
 	"bytes"
@@ -23,7 +23,7 @@ import (
 // The State object provides methods to synchronize and query the state of the ECS cluster.
 type State struct {
 	clusterName string
-	db          gorm.DB
+	db          *gorm.DB
 	ecs_client  *ecs.ECS
 	log         Logger
 }
@@ -31,7 +31,7 @@ type State struct {
 // Create a new State object.  The clusterName is the cluster to track, ecs_client should be provided by the caller
 // with proper credentials preferably scoped to read only access to ECS APIs, and the logger can use ecs_state.DefaultLogger
 // for output on stdout, or the user can provide a custom logger instead.
-func Initialize(clusterName string, ecs_client *ecs.ECS, logger Logger) *State {
+func Initialize(clusterName string, ecs_client *ecs.ECS, logger Logger) StateOps {
 	logger.Info("Intializing ecs_state for cluster ", clusterName)
 
 	db, err := gorm.Open("sqlite3", ":memory:")
@@ -49,7 +49,7 @@ func Initialize(clusterName string, ecs_client *ecs.ECS, logger Logger) *State {
 
 // Provides direct access to the database through gorm to allow more advanced queries against state.
 func (state *State) DB() *gorm.DB {
-	return &state.db
+	return state.db
 }
 
 // Will parse and log any AWS errors received while contacting ECS.
