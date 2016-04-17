@@ -31,7 +31,7 @@ type State struct {
 // Create a new State object.  The clusterName is the cluster to track, ecs_client should be provided by the caller
 // with proper credentials preferably scoped to read only access to ECS APIs, and the logger can use ecs_state.DefaultLogger
 // for output on stdout, or the user can provide a custom logger instead.
-func Initialize(clusterName string, ecs_client *ecs.ECS, logger Logger) *State {
+func Initialize(clusterName string, ecs_client *ecs.ECS, logger Logger) StateOps {
 	logger.Info("Intializing ecs_state for cluster ", clusterName)
 
 	db, err := gorm.Open("sqlite3", ":memory:")
