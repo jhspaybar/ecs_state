@@ -1,4 +1,8 @@
-package scheduler
+package ecsstate
+
+import (
+	"github.com/aws/aws-sdk-go/service/ecs"
+)
 
 // StateOps is the interface for refreshing and interacting with the local
 // ECS state.
